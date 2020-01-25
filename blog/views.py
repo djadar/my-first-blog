@@ -2,17 +2,27 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from .models import Post
 from .forms import PostForm
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
+from django.views import generic
 
 # Create your views here.
-def post_list(request):
-    posts = Post.objects.filter(published_date__lte=timezone.now())
-    return render(request, 'blog/post_list.html', {'posts': posts})
+class IndexView(generic.ListView):
+    template_name = 'blog/post_list.html'
+
+    def get_queryset(self):
+        return Post.objects.filter(published_date__lte=timezone.now())
 
 def post_detail(request,pk):
     post = get_object_or_404(Post, pk=pk)
+    
     return render(request, 'blog/post_detail.html', {'post':post})
+
+
+'''def post_list(request):
+    posts = Post.objects.filter(published_date__lte=timezone.now())
+    return render(request, 'blog/post_list.html', {'posts': posts})'''
+
 
 def post_new(request):
     if request.method =="POST":
